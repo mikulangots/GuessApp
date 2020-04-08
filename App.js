@@ -9,12 +9,20 @@ import { StyleSheet, Text, View, TextInput, TouchableHighlight } from 'react-nat
 //   );
 // }
 
+// Modify the Guess the Number app so that
+// It limits the number of guesses to 5.
+// Shows the remaining number of guesses available to the player
+// After you make the modifications, make sure you stage your changes using   git add .  , commit them using   git commit -m "coding challenge 1"  
+// and then push the changes to your Github repository using   git push origin master   . When done, paste the URL to your Github repository here.     
+
 export default class Game extends Component {
   // set initial state
   state = {
     secret : 0,
     input: '',
-    feedback: ''
+    feedback: '',
+    count: 0
+    
   }
   // function to pick a random number
   generateRandom(){
@@ -23,7 +31,9 @@ export default class Game extends Component {
   // function to initialise the game
   init(){
     const secretNumber = this.generateRandom()
+    const counter = 4
     this.setState({secret: secretNumber})
+    this.setState({count: counter})
   } 
   // lifecycle function
   componentDidMount(){
@@ -35,19 +45,30 @@ export default class Game extends Component {
   checkGuess = () =>{
     const userGuess = parseInt(this.state.input);
     const secretNumber = this.state.secret;
-    if (userGuess == secretNumber) {
-      this.setState({feedback: 'You Guessed Right, The Number Is ' + secretNumber})
-      // restart the game
-      this.init()
+    const counter = this.state.count;
+    while (counter != 0) {
+      if (userGuess == secretNumber) {
+        this.setState({feedback: 'You Guessed Right, The Number Is ' + secretNumber})
+        // restart the game
+        this.init()
+        return
+      }
+      if (userGuess < secretNumber){
+        this.setState({count: counter - 1})
+        this.setState({feedback: 'The Number Is Larger Than ' + userGuess + '\n\nYou have ' + this.state.count + ' guesses left'})
+        
+      }
+      if (userGuess > secretNumber){
+        this.setState({count: counter - 1})
+        this.setState({feedback: 'The Number Is Smaller Than ' + userGuess + '\n\nYou have ' + this.state.count + ' guesses left'})
+      }
       return
     }
-    if (userGuess < secretNumber){
-      this.setState({feedback: 'The Number Is Larger Than ' + userGuess})
-    }
-    if (userGuess > secretNumber){
-      this.setState({feedback: 'The Number Is Smaller Than ' + userGuess})
-    }
+    this.setState({feedback: 'You are out of guesses'})
+    // restart the game
+    this.init()
     return
+    
   }
   render (){
     return(
